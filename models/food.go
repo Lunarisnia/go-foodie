@@ -8,6 +8,7 @@ import (
 
 type Food struct {
 	gorm.Model
+	ID    uint
 	Name  string
 	Price float64
 }
@@ -23,7 +24,7 @@ func (f *Food) Create(name string, price float64) int {
 	return int(newFood.ID)
 }
 
-func (f *Food) FindOneById(id int) Food {
+func (f *Food) FindOneById(id string) Food {
 	food := Food{}
 	DB.First(&food, id)
 	return food
@@ -40,13 +41,17 @@ func (f *Food) Update(updatedFood *Food) {
 }
 
 func (f *Food) Updates(update Food, query interface{}, args ...interface{}) {
-	DB.Table(f.GetTable()).Where(query, args...).Updates(update)
+	DB.Table(f.getTable()).Where(query, args...).Updates(update)
+}
+
+func (f *Food) Delete(food Food) {
+	DB.Delete(&food)
 }
 
 func (f *Food) String() string {
 	return fmt.Sprintf("Foodname: %v", f.Name)
 }
 
-func (f *Food) GetTable() string {
+func (f *Food) getTable() string {
 	return "foods"
 }
