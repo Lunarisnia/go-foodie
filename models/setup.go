@@ -33,7 +33,7 @@ func ConnectDatabase() {
 	}
 
 	// Migrate
-	db.AutoMigrate(&Food{})
+	db.AutoMigrate(&Food{}, &AddOn{})
 
 	fmt.Println("Database connected.")
 	DB = db

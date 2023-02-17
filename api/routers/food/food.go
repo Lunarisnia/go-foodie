@@ -17,7 +17,8 @@ type FoodHandler struct {
 func (h *FoodHandler) handleGet(foodId string, res http.ResponseWriter, req *http.Request) {
 	food := models.FoodModel.FindOneById(foodId)
 	if food.ID == 0 {
-		http.NotFound(res, req)
+		http.Error(res, "food not found", http.StatusNotFound)
+		return
 	}
 	// TODO: add error handling
 	a, _ := json.Marshal(food)
@@ -31,7 +32,7 @@ func (h *FoodHandler) handlePost(res http.ResponseWriter, req *http.Request) {
 		http.Error(res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	newFood := models.FoodModel.Create(body.Name, body.Price)
+	newFood := models.FoodModel.Create(body.Name, body.BasePrice)
 
 	res.Write([]byte(fmt.Sprintf(`{"NewFoodID": %v }`, newFood)))
 }
@@ -48,7 +49,7 @@ func (h *FoodHandler) handlePut(foodId string, res http.ResponseWriter, req *htt
 		http.Error(res, jsonErr.Error(), http.StatusBadRequest)
 		return
 	}
-	food := models.Food{Name: body.Name, Price: body.Price}
+	food := models.Food{Name: body.Name, BasePrice: body.BasePrice}
 	models.FoodModel.Updates(food, "id = ?", foodId)
 
 	fmt.Fprint(res, "Update success!")

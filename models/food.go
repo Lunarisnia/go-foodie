@@ -8,17 +8,21 @@ import (
 
 type Food struct {
 	gorm.Model
-	ID    uint
-	Name  string
-	Price float64
+	ID          uint
+	Name        string
+	PhotoUrl    string
+	Description string
+	Rating      int
+	BasePrice   float64
+	AddOns      []AddOn
 }
 
 var FoodModel Food
 
 func (f *Food) Create(name string, price float64) int {
 	newFood := Food{
-		Name:  name,
-		Price: price,
+		Name:      name,
+		BasePrice: price,
 	}
 	DB.Create(&newFood)
 	return int(newFood.ID)
@@ -26,13 +30,13 @@ func (f *Food) Create(name string, price float64) int {
 
 func (f *Food) FindOneById(id string) Food {
 	food := Food{}
-	DB.First(&food, id)
+	DB.Model(&Food{}).Preload("AddOns").First(&food, id)
 	return food
 }
 
 func (f *Food) FindByName(name string) []Food {
 	var foods []Food
-	DB.Where("name LIKE ?", "%"+name+"%").Find(&foods)
+	DB.Model(&Food{}).Preload("AddOns").Where("name LIKE ?", "%"+name+"%").Find(&foods)
 	return foods
 }
 
