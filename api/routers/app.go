@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/lunarisnia/go-foodie/api/routers/addOn"
 	"github.com/lunarisnia/go-foodie/api/routers/food"
 	"github.com/lunarisnia/go-foodie/utils"
 )
 
 type App struct {
-	FoodHandler *food.FoodHandler
+	FoodHandler  *food.FoodHandler
+	AddOnHandler *addOn.AddOnHandler
 }
 
 func (h *App) ServeHTTP(res http.ResponseWriter, req *http.Request) {
@@ -20,6 +22,8 @@ func (h *App) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(res, "Welcome to Foodie API! 😉")
 	case "food":
 		h.FoodHandler.Handler().ServeHTTP(res, req)
+	case "add-on":
+		h.AddOnHandler.Handler().ServeHTTP(res, req)
 	default:
 		http.NotFound(res, req)
 	}
